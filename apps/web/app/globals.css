@@ -1,50 +1,76 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Forcing dark mode as default for Mission Control aesthetic */
+    --background: 220 50% 4%;
+    --foreground: 0 0% 95%;
+    --card: 220 50% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 50% 8%;
+    --popover-foreground: 0 0% 95%;
+    /* Bioluminescent Neon Green */
+    --primary: 140 100% 45%;
+    --primary-foreground: 140 100% 10%;
+    /* Subtle dark blueish secondary */
+    --secondary: 220 40% 15%;
+    --secondary-foreground: 220 10% 95%;
+    --muted: 220 40% 15%;
+    --muted-foreground: 220 10% 70%;
+    /* Neon Blue Accent */
+    --accent: 200 100% 50%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 50% 15%;
+    --input: 220 50% 15%;
+    --ring: 140 100% 45%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 220 50% 4%;
+    --foreground: 0 0% 95%;
+    --card: 220 50% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 50% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 140 100% 45%;
+    --primary-foreground: 140 100% 10%;
+    --secondary: 220 40% 15%;
+    --secondary-foreground: 220 10% 95%;
+    --muted: 220 40% 15%;
+    --muted-foreground: 220 10% 70%;
+    --accent: 200 100% 50%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 220 50% 15%;
+    --input: 220 50% 15%;
+    --ring: 140 100% 45%;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer base {
+  * {
+    @apply border-border;
   }
-
-  .imgLight {
-    display: none;
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary;
   }
-  .imgDark {
-    display: unset;
+}
+
+/* Custom Mission Control / Cinematic Utilities */
+@layer utilities {
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-md border border-white/10 shadow-lg;
+  }
+  .text-glow {
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  }
+  .box-glow {
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.2);
   }
 }

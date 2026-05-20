@@ -1,0 +1,22 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "system_online": "SYSTÈME EN LIGNE",
+    "mission_control": "Contrôle de Mission",
+    "telemetry": "Télémétrie",
+    "health": "Santé",
+    "active_flora": "Flore Active",
+    "recent_activity": "Activité Récente",
+    "ar_guidance": "Guidage RA",
+    "ai_scanner": "Scanner IA",
+    "open_intelligence": "Intelligence Ouverte"
+  },
+  "dashboard": {
+    "subtitle": "Télémétrie en temps réel et analyses IA pour votre écosystème urbain.",
+    "primary_specimens": "Spécimens Primaires",
+    "no_telemetry": "Aucune télémétrie active détectée.",
+    "copilot_title": "Copilote de Jardinage",
+    "copilot_status_online": "IA en Ligne & Surveillance",
+    "copilot_status_sync": "Synchronisation de la Télémétrie..."
+  }
+}

@@ -1,0 +1,49 @@
+name: Deployment Audit & CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Lint workspace
+        run: npm run lint
+        
+      - name: Type check (Web)
+        run: npm run check-types --workspace apps/web
+        
+      - name: Security Audit (npm audit)
+        run: npm audit --audit-level=high
+
+  deploy-web:
+    needs: audit
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel (Simulated)
+        run: echo "Finalizing Vercel deployment hooks..."
+
+  deploy-mobile:
+    needs: audit
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: EAS Build (Simulated)
+        run: echo "Initiating EAS Build production pipeline..."

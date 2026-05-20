@@ -1,0 +1,22 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "system_online": "SYSTEM ONLINE",
+    "mission_control": "Mission Control",
+    "telemetry": "Telemetry",
+    "health": "Health",
+    "active_flora": "Active Flora",
+    "recent_activity": "Recent Activity",
+    "ar_guidance": "AR Guidance",
+    "ai_scanner": "AI Scanner",
+    "open_intelligence": "Open Intelligence"
+  },
+  "dashboard": {
+    "subtitle": "Real-time telemetry and AI analytics for your urban ecosystem.",
+    "primary_specimens": "Primary Specimens",
+    "no_telemetry": "No active telemetry detected.",
+    "copilot_title": "Gardening Copilot",
+    "copilot_status_online": "AI Online & Monitoring",
+    "copilot_status_sync": "Synchronizing Telemetry..."
+  }
+}
