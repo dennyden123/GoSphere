@@ -11,6 +11,28 @@ async function simulateTelemetry() {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Authenticate if credentials are provided in the environment
+  const EMAIL = process.env.SIMULATOR_USER_EMAIL;
+  const PASSWORD = process.env.SIMULATOR_USER_PASSWORD;
+  
+  let authHeader = `Bearer ${SUPABASE_ANON_KEY}`;
+  
+  if (EMAIL && PASSWORD) {
+    console.log(`🔐 Authenticating as user: ${EMAIL}...`);
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: EMAIL,
+      password: PASSWORD,
+    });
+    
+    if (authError) {
+      console.error('❌ Authentication failed:', authError.message);
+      return;
+    } else if (authData?.session) {
+      console.log('✅ Authentication successful.');
+      authHeader = `Bearer ${authData.session.access_token}`;
+    }
+  }
+
   // 1. Find a target garden specimen
   const { data: specimens, error: fetchError } = await supabase
     .from('user_gardens')
@@ -18,7 +40,7 @@ async function simulateTelemetry() {
     .limit(1);
 
   if (fetchError || !specimens || specimens.length === 0) {
-    console.error('❌ Error: No garden specimens found to target.');
+    console.error('❌ Error: No garden specimens found to target.', fetchError ? fetchError.message : '');
     return;
   }
 
@@ -42,7 +64,7 @@ async function simulateTelemetry() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          'Authorization': authHeader
         },
         body: JSON.stringify({
           user_garden_id: target.id,

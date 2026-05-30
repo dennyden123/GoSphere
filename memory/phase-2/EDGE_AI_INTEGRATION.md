@@ -20,7 +20,7 @@ A lightweight service that performs POST requests to the Hugging Face Inference 
 
 ### Inference Hook (`src/hooks/usePlantInference.ts`)
 - Resizes images to `512px` (optimal for cloud inference without excessive upload time).
-- Converts images to Base64 for the API payload.
+- Decodes the Base64 image into a binary `Uint8Array` buffer before transmission to correct vision pipeline formats.
 - Handles loading states and error reporting for the UI.
 
 ## 4. Usage Limits

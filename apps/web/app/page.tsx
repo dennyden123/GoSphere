@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { Button, GlassCard, cn } from "@repo/ui";
 import { supabase } from "@/lib/supabase";
+import { TelemetryCard } from "@/components/Dashboard/TelemetryCard";
+import { SpecimenRow } from "@/components/Dashboard/SpecimenRow";
 
 interface Specimen {
   id: number;
@@ -53,9 +55,6 @@ export default function MissionControl() {
           // Update the UI in real-time based on the sensor type
           setSpecimens((prevSpecimens) => 
             prevSpecimens.map((specimen) => {
-              // Simulating matching telemetry to a specific plant (In real app, match by user_garden_id)
-              // For demonstration, we'll just update the first specimen or one that matches some ID
-              // Let's say if we get soil_moisture, we update Cherry Tomato's moisture
               if (newTelemetry.sensor_type === 'soil_moisture') {
                 return {
                   ...specimen,
@@ -224,69 +223,5 @@ export default function MissionControl() {
         </div>
       </div>
     </div>
-  );
-}
-
-interface TelemetryCardProps {
-  title: string;
-  value: string;
-  trend: string;
-  icon: React.ReactNode;
-}
-
-function TelemetryCard({ title, value, trend, icon }: TelemetryCardProps) {
-  return (
-    <GlassCard className="p-5 flex flex-col justify-between h-full hover:border-primary/50 transition-all hover:translate-y-[-2px]">
-      <div className="flex justify-between items-start mb-4">
-        <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-          {icon}
-        </div>
-        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md">
-          {trend}
-        </span>
-      </div>
-      <div>
-        <h4 className="text-slate-400 text-sm font-medium mb-1">{title}</h4>
-        <div className="text-3xl font-semibold tracking-tight text-white">{value}</div>
-      </div>
-    </GlassCard>
-  );
-}
-
-function SpecimenRow({ name, health, moisture, status, warning }: Specimen) {
-  return (
-    <GlassCard className={cn(
-      "p-4 flex flex-col md:flex-row md:items-center gap-4 transition-all hover:bg-white/[0.05]",
-      warning && "border-destructive/30"
-    )}>
-      <div className="flex items-center gap-4 flex-1">
-        <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center text-xl shadow-inner border border-white/5">
-          🌿
-        </div>
-        <div>
-          <h4 className="font-medium text-white">{name}</h4>
-          <p className={cn(
-            "text-[10px] font-mono uppercase tracking-widest",
-            warning ? "text-destructive" : "text-primary"
-          )}>{status}</p>
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-12">
-        <div className="text-right">
-          <p className="text-[10px] text-slate-500 uppercase font-mono mb-1">Vitals</p>
-          <p className={cn("font-bold", warning ? 'text-destructive' : 'text-primary')}>{health}%</p>
-        </div>
-        <div className="text-right">
-          <p className="text-[10px] text-slate-500 uppercase font-mono mb-1">Hydration</p>
-          <p className="font-bold text-blue-400">{moisture}%</p>
-        </div>
-        <div className="pl-4">
-          <Button variant="ghost" size="icon" className="text-slate-600 hover:text-white">
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </GlassCard>
   );
 }

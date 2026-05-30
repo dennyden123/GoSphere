@@ -13,7 +13,7 @@ This document serves as the technical source of truth for the GroSphere platform
 ## 2. Offline-First Architecture
 The mobile application uses an "Offline-First" strategy for data and a "Cloud-First, Local-Cached" strategy for AI.
 *   **Local Data Store:** **WatermelonDB** for reactive, offline-first data caching (Schema v3 with telemetry support).
-*   **Sync Engine:** Integrated WatermelonDB `synchronize()` logic with Supabase, tracking `updated_at` and `deleted_at` (soft deletes) for robust delta-based syncing.
+*   **Sync Engine:** Integrated WatermelonDB `synchronize()` logic with Supabase. Optimized for performance by parallelizing table pulls (`plants`, `user_gardens`, etc.).
 *   **Conflict Resolution:** Last Write Wins (LWW).
 *   **Media Caching:** Images and offline guides cached via `expo-file-system`.
 
@@ -35,22 +35,22 @@ The mobile application uses an "Offline-First" strategy for data and a "Cloud-Fi
 Pivoted to a cloud-first approach for Phase 2 to ensure maximum accuracy and zero on-device model overhead.
 *   **Identification Model:** `Hemant_Kumar/plant-identification` via Hugging Face Inference API.
 *   **Disease Model:** `imadegunawan/plant-disease-detection-using-vit` via Hugging Face Inference API.
-*   **Preprocessing:** Images are resized to 512px and compressed to JPEG before transmission to optimize bandwidth and stay within free-tier limits.
+*   **Preprocessing:** Images are resized to 512px and compressed to JPEG. Base64 conversion is optimized using the `base64-js` library for low-latency transmission.
 *   **Latency:** Optimized for <1s inference using the Hugging Face Serverless API.
 
-## 5. UI/UX: The "Mission Control" Aesthetic
+## 6. UI/UX: The "Mission Control" Aesthetic
 The interface must feel cinematic, highly functional, and visually striking, inspired by modern interactive sites (`motionsites.ai`).
 *   **Visual Language:** Dark mode by default, neon accents (e.g., bioluminescent green/blue), blurred glassmorphism effects for overlays.
 *   **Animations:** Use Framer Motion (Web) and React Native Reanimated (Mobile) for fluid transitions and interactive elements.
-*   **Components:** Custom `BioluminescentButton` and `GlassCard` built in `@repo/ui`.
+*   **Components:** Custom `BioluminescentButton` and `GlassCard` built in `@repo/ui`. Web components are modularized for better maintainability (e.g., `Dashboard/TelemetryCard`).
 
-## 6. Supabase Integration
+## 7. Supabase Integration
 *   **Auth:** Email/Password via Supabase Auth. Session persistence handled by `expo-secure-store` for encrypted local storage.
 *   **Storage:** Buckets for `user-uploads` and `system-assets`.
 *   **Database:** Reactive PostgreSQL with RLS policies, connected to mobile via `withObservables`.
 *   **Edge Functions:** Deno-based functions (Sync Bridge, Cloud AI fallback).
 
-## 7. Development & Deployment
+## 8. Development & Deployment
 *   **Web Deployment:** Vercel.
 *   **Mobile Deployment:** Expo Application Services (EAS).
 *   **CI/CD:** GitHub Actions via Turborepo (`turbo run test lint`).

@@ -30,6 +30,13 @@ To support syncing, every table in Supabase must include:
 - **Strategy:** "Last Write Wins" (standard for WatermelonDB). 
 - **Future-proofing:** If complex conflicts arise (e.g., two people editing a shared garden), we will move logic into a dedicated "Sync Resolver" Edge Function.
 
+## Datetime Mapping & Schema Type Casts (Fixed May 25, 2026)
+- **Problem:** SQLite stores datetimes as numeric epochs (milliseconds since Jan 1 1970) for WatermelonDB, whereas Supabase/PostgreSQL stores them as string datetimes with timezone (`TIMESTAMP WITH TIME ZONE`). Direct insertions on both sides failed.
+- **Solution:** Integrated `mapToLocal` and `mapToRemote` hooks directly in [sync.ts](file:///Users/denny/GroShpere/apps/mobile/src/database/sync.ts):
+  - On pull, date strings are parsed into numbers using `new Date(val).getTime()`.
+  - On push, numbers are converted to ISO 8601 strings using `new Date(val).toISOString()`.
+  - Applied to `created_at`, `updated_at`, `deleted_at` across all synced tables, as well as `log_date` in `garden_logs`.
+
 ## Implementation Roadmap
 1. **Supabase Update:** Add `updated_at` and `deleted_at` columns to all tables.
 2. **Edge Function:** Create a `sync` Edge Function in Deno to handle the pull/push logic.

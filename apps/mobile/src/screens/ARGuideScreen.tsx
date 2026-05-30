@@ -171,6 +171,7 @@ export function ARGuideScreen({ navigation, route }: any) {
           log.activityType = mode === 'pruning' ? `AR Pruning (${pruningType})` : 'AR Measurement';
           log.telemetryValue = mode === 'measuring' ? cmDist : undefined;
           log.telemetryUnit = mode === 'measuring' ? 'cm' : undefined;
+          log.logDate = new Date();
           log.notes = mode === 'pruning' 
             ? `Pruned at height ${((height - cutLineY) * 0.05).toFixed(1)}cm equivalent.`
             : `Measured dimension: ${cmDist}cm.`;

@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import withObservables from '@nozbe/with-observables';
+import { Q } from '@nozbe/watermelondb';
 import { database } from '../database';
 import UserGarden from '../database/models/UserGarden';
 import GardenLog from '../database/models/GardenLog';
@@ -92,29 +93,42 @@ const DashboardScreenBase = memo(({ activeSpecimens, recentLogs, navigation }: D
   }, [activeSpecimens, weather]);
 
   useEffect(() => {
-    // Subscribe to IoT hardware telemetry
-    const channel = supabase
-      .channel('public:hardware_telemetry')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'hardware_telemetry' },
-        (payload) => {
-          const { user_garden_id, sensor_type, reading_value } = payload.new;
-          setLiveTelemetry(prev => ({
-            ...prev,
-            [user_garden_id]: {
-              ...prev[user_garden_id],
-              [sensor_type === 'soil_moisture' ? 'moisture' : 'light']: reading_value
-            }
-          }));
-        }
-      )
-      .subscribe();
+    if (activeSpecimens.length === 0) return;
+
+    // Create unique scoped channels for each active specimen user_garden_id
+    const channels = activeSpecimens.map((specimen) => {
+      const channel = supabase
+        .channel(`telemetry:${specimen.id}`)
+        .on(
+          'postgres_changes',
+          { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'hardware_telemetry',
+            filter: `user_garden_id=eq.${specimen.id}`
+          },
+          (payload) => {
+            const { user_garden_id, sensor_type, reading_value } = payload.new;
+            setLiveTelemetry(prev => ({
+              ...prev,
+              [user_garden_id]: {
+                ...prev[user_garden_id],
+                [sensor_type === 'soil_moisture' ? 'moisture' : 'light']: reading_value
+              }
+            }));
+          }
+        )
+        .subscribe();
+      
+      return channel;
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      channels.forEach(channel => {
+        supabase.removeChannel(channel);
+      });
     };
-  }, []);
+  }, [activeSpecimens]);
 
   return (
     <View style={styles.container}>
@@ -668,7 +682,9 @@ const styles = StyleSheet.create({
 
 const enhance = withObservables([], () => ({
   activeSpecimens: database.get<UserGarden>('user_gardens').query().observe(),
-  recentLogs: database.get<GardenLog>('garden_logs').query().observe(),
+  recentLogs: database.get<GardenLog>('garden_logs')
+    .query(Q.sortBy('log_date', Q.desc))
+    .observe(),
 }));
 
 export const DashboardScreen = enhance(DashboardScreenBase);

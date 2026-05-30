@@ -1,3 +1,5 @@
+import { toByteArray } from 'base64-js';
+
 const HF_API_TOKEN = process.env.EXPO_PUBLIC_HF_API_TOKEN || '';
 
 // Models
@@ -12,19 +14,26 @@ export interface HFClassificationResult {
 
 async function query(model: string, imageBase64: string): Promise<HFClassificationResult[]> {
   try {
+    // Clean base64 string and convert to Uint8Array
+    const base64Clean = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '').replace(/\s/g, '');
+    const binaryBody = toByteArray(base64Clean);
+    
     const response = await fetch(
       `https://api-inference.huggingface.co/models/${model}`,
       {
         headers: { 
           Authorization: `Bearer ${HF_API_TOKEN}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/octet-stream'
         },
         method: 'POST',
-        body: JSON.stringify({ inputs: imageBase64 }),
+        body: binaryBody as any,
       }
     );
 
     if (!response.ok) {
+      if (response.status === 503) {
+        throw new Error('AI Model is booting up. Please try again in 30 seconds.');
+      }
       const errorData = await response.json();
       throw new Error(errorData.error || 'Hugging Face API request failed');
     }

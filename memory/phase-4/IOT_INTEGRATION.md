@@ -22,3 +22,7 @@ Both the Web Dashboard (Next.js) and the Mobile App (Expo) have been updated to 
 ## Next Steps for Hardware
 1. Flash an ESP32 with a basic HTTP POST script pointing to the Supabase Edge Function URL.
 2. Ensure the hardware passes the correct `user_garden_id` mapping to link physical sensors to the digital twin in the app.
+
+## Optimizations & RLS Adjustments (May 25, 2026)
+- **Scoped Telemetry Subscriptions:** Refactored the mobile client to map over active specimen IDs, establishing unique channel subscriptions using equal filters (`user_garden_id=eq.[id]`) rather than listening to the entire public `hardware_telemetry` table. This protects user privacy and prevents client socket overhead from high-frequency broadcasts of other users.
+- **Simulator Authentication:** Updated [iot_simulator.js](file:///Users/denny/GroShpere/scripts/iot_simulator.js) to support user credentials sign-in using `SIMULATOR_USER_EMAIL` and `SIMULATOR_USER_PASSWORD` environment variables, passing the retrieved JWT in the `Authorization` header to successfully satisfy `user_gardens` and `hardware_telemetry` SELECT and INSERT RLS checks.
